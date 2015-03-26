@@ -1,0 +1,44 @@
+{
+    "hooks": [
+        {
+            "relative": 5114235,
+            "handler": "pickle_ReadInt16",
+            "base": "libxul.so",
+            "library": "/data/libpickle.so"
+        },
+        {
+            "relative": 5114279,
+            "handler": "pickle_ReadInt",
+            "base": "libxul.so",
+            "library": "/data/libpickle.so"
+        },
+        {
+            "relative": 5114349,
+            "handler": "pickle_ReadLong",
+            "base": "libxul.so",
+            "library": "/data/libpickle.so"
+        },
+        {
+            "relative": 5114421,
+            "handler": "pickle_ReadInt64",
+            "base": "libxul.so",
+            "library": "/data/libpickle.so"
+        },
+        {
+            "relative": 5114469,
+            "handler": "pickle_ReadBytes",
+            "base": "libxul.so",
+            "library": "/data/libpickle.so"
+        },
+        {
+            "relative": 5114545,
+            "handler": "pickle_ReadData",
+            "base": "libxul.so",
+            "library": "/data/libpickle.so"
+        }
+    ],
+    "settings": {
+        "libc": "libc.so",
+        "helper": "/data/libarmhook.so"
+    }
+}
