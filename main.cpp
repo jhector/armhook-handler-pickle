@@ -3,8 +3,10 @@
 #include "message.h"
 #include "hook.h"
 
+#define ALIGN_SIZE sizeof(uint32_t)
+
 #define __ALIGN_MASK(x,mask) (((x)+(mask))&~(mask))
-#define ALIGN(x) __ALIGN_MASK(x,sizeof(uint32_t)-1)
+#define ALIGN(x) __ALIGN_MASK(x,ALIGN_SIZE-1)
 
 extern "C" {
 int8_t pickle_ReadInt16(struct hook_data *h_data);
@@ -104,6 +106,14 @@ static bool ReadBytes(IPCMessage *obj, void **iter, const char **data,
 	if (!*iter)
 		*iter = const_cast<char*>(payload(obj));
 
+	uint32_t padding_len = intptr_t(*iter) % alignment;
+	if (padding_len)
+		length += padding_len;
+
+	*data = static_cast<const char*>(*iter) + padding_len;
+
+	UpdateIter(iter, length);
+
 	return true;
 }
 
@@ -113,7 +123,10 @@ static bool ReadData(IPCMessage *obj, void **iter, const char **data,
 	if (!*iter)
 		*iter = const_cast<char*>(payload(obj));
 
-	return true;
+	if (!ReadLength(obj, iter, length))
+		return false;
+
+	return ReadBytes(obj, iter, data, *length, ALIGN_SIZE);
 }
 
 static bool ReadString(IPCMessage *obj, void **iter, std::string *result)
@@ -121,9 +134,17 @@ static bool ReadString(IPCMessage *obj, void **iter, std::string *result)
 	if (!*iter)
 		*iter = const_cast<char*>(payload(obj));
 
+	int len;
+	if (!ReadLength(obj, iter, &len))
+		return false;
+
+	char *chars = reinterpret_cast<char*>(*iter);
+	result->assign(chars, len);
+
+	UpdateIter(iter, len);
+
 	return true;
 }
-
 
 /*
  * data->r0 = IPCMessage *this

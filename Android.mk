@@ -10,6 +10,7 @@ LOCAL_C_INCLUDES += \
 	bionic/libstdc++/include \
 	external/stlport/stlport
 
+LOCAL_SHARED_LIBRARIES := libstlport
 LOCAL_MODULE_TAGS := optional
 
 LOCAL_MODULE := libpickle

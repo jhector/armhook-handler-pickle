@@ -35,6 +35,24 @@
             "handler": "pickle_ReadInt64",
             "base": "libxul.so",
             "library": "/data/libpickle.so"
+        },
+        {
+            "relative": 5114469,
+            "handler": "pickle_ReadBytes",
+            "base": "libxul.so",
+            "library": "/data/libpickle.so"
+        },
+        {
+            "relative": 5114545,
+            "handler": "pickle_ReadData",
+            "base": "libxul.so",
+            "library": "/data/libpickle.so"
+        },
+        {
+            "relative": 5118685,
+            "handler": "pickle_ReadString",
+            "base": "libxul.so",
+            "library": "/data/libpickle.so"
         }
     ],
     "settings": {
