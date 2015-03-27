@@ -17,9 +17,9 @@ symbols = [
 	'_ZNK6Pickle9ReadBytesEPPvPPKcij',
 	'_ZNK6Pickle8ReadSizeEPPvPj',
 	'_ZNK6Pickle8ReadDataEPPvPPKcPi',
-#	'_ZNK6Pickle10ReadStringEPPvPSs', # need to implement c++ interface
-#	'_ZNK6Pickle10ReadLengthEPPvPi', # prolog can't be saved (contains conditional branches)
-#	'_ZNK6Pickle8ReadBoolEPPvPb', # prolog can't be saved (contains conditional branches)
+	'_ZNK6Pickle10ReadStringEPPvPSs',
+	'_ZNK6Pickle10ReadLengthEPPvPi',
+	'_ZNK6Pickle8ReadBoolEPPvPb',
 ]
 
 config = {"settings": {"libc": "libc.so", "helper": "/data/libarmhook.so"}, "hooks": []}
