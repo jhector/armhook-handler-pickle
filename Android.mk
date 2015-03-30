@@ -2,7 +2,8 @@ LOCAL_PATH := $(my-dir)
 
 include $(CLEAR_VARS)
 LOCAL_SRC_FILES := \
-	main.cpp
+	main.cpp \
+	backend.cpp
 
 LOCAL_C_INCLUDES += \
 	$(ARMHOOK_ROOT_PATH)/core/helper \

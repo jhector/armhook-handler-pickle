@@ -1,5 +1,6 @@
 #include <string>
 
+#include "backend.h"
 #include "message.h"
 #include "hook.h"
 
@@ -146,6 +147,14 @@ static bool ReadString(IPCMessage *obj, void **iter, std::string *result)
 	return true;
 }
 
+static int get_offset(IPCMessage *obj, void **iter)
+{
+	if (!*iter)
+		return 0;
+
+	return (uint32_t)((uint32_t)(*iter) - (uint32_t)payload(obj));
+}
+
 /*
  * data->r0 = IPCMessage *this
  * data->r1 = void **iter
@@ -157,7 +166,20 @@ static int8_t ReadInt16(struct hook_data *h_data)
 	void **iter = (void**)h_data->r1;
 	int16_t *result = (int16_t*)h_data->r2;
 
+	if (log_enabled(obj->name_))
+		log_message(obj->name_, "ReadInt16");
+
+	int offset = get_offset(obj, iter);
 	h_data->r0 = (uint32_t)ReadInt16(obj, iter, result);
+
+	if (int16_enabled() && !blacklisted(obj->name_) &&
+		msg_enabled(obj->name_)) {
+		int16_t old = *result;
+		*result = get_int16();
+
+		log_fuzzed(obj->name_, offset, (uint8_t*)&old, sizeof(old),
+			(uint8_t*)result, sizeof(*result));
+	}
 
 	return 1;
 }
@@ -173,7 +195,20 @@ static int8_t ReadInt(struct hook_data *h_data)
 	void **iter = (void**)h_data->r1;
 	int *result = (int*)h_data->r2;
 
+	if (log_enabled(obj->name_))
+		log_message(obj->name_, "ReadInt");
+
+	int offset = get_offset(obj, iter);
 	h_data->r0 = (uint32_t)ReadInt(obj, iter, result);
+
+	if (int_enabled() && !blacklisted(obj->name_) &&
+		msg_enabled(obj->name_)) {
+		int old = *result;
+		*result = get_int();
+
+		log_fuzzed(obj->name_, offset, (uint8_t*)&old, sizeof(old),
+			(uint8_t*)result, sizeof(*result));
+	}
 
 	return 1;
 }
@@ -189,7 +224,20 @@ static int8_t ReadBool(struct hook_data *h_data)
 	void **iter = (void**)h_data->r1;
 	bool *result = (bool*)h_data->r2;
 
+	if (log_enabled(obj->name_))
+		log_message(obj->name_, "ReadBool");
+
+	int offset = get_offset(obj, iter);
 	h_data->r0 = (uint32_t)ReadBool(obj, iter, result);
+
+	if (bool_enabled() && !blacklisted(obj->name_) &&
+		msg_enabled(obj->name_)) {
+		bool old = *result;
+		*result = get_bool();
+
+		log_fuzzed(obj->name_, offset, (uint8_t*)&old, sizeof(old),
+			(uint8_t*)result, sizeof(*result));
+	}
 
 	return 1;
 }
@@ -205,7 +253,20 @@ static int8_t ReadLong(struct hook_data *h_data)
 	void **iter = (void**)h_data->r1;
 	long *result = (long*)h_data->r2;
 
+	if (log_enabled(obj->name_))
+		log_message(obj->name_, "ReadLong");
+
+	int offset = get_offset(obj, iter);
 	h_data->r0 = (uint32_t)ReadLong(obj, iter, result);
+
+	if (long_enabled() && !blacklisted(obj->name_) &&
+		msg_enabled(obj->name_)) {
+		long old = *result;
+		*result = get_long();
+
+		log_fuzzed(obj->name_, offset, (uint8_t*)&old, sizeof(old),
+			(uint8_t*)result, sizeof(*result));
+	}
 
 	return 1;
 }
@@ -221,7 +282,20 @@ static int8_t ReadLength(struct hook_data *h_data)
 	void **iter = (void**)h_data->r1;
 	int *result = (int*)h_data->r2;
 
+	if (log_enabled(obj->name_))
+		log_message(obj->name_, "ReadLength");
+
+	int offset = get_offset(obj, iter);
 	h_data->r0 = (uint32_t)ReadLength(obj, iter, result);
+
+	if (length_enabled() && !blacklisted(obj->name_) &&
+		msg_enabled(obj->name_)) {
+		int old = *result;
+		*result = get_length();
+
+		log_fuzzed(obj->name_, offset, (uint8_t*)&old, sizeof(old),
+			(uint8_t*)result, sizeof(*result));
+	}
 
 	return 1;
 }
@@ -237,7 +311,20 @@ static int8_t ReadInt64(struct hook_data *h_data)
 	void **iter = (void**)h_data->r1;
 	int64_t *result = (int64_t*)h_data->r2;
 
+	if (log_enabled(obj->name_))
+		log_message(obj->name_, "ReadInt64");
+
+	int offset = get_offset(obj, iter);
 	h_data->r0 = (uint32_t)ReadInt64(obj, iter, result);
+
+	if (int64_enabled() && !blacklisted(obj->name_) &&
+		msg_enabled(obj->name_)) {
+		int64_t old = *result;
+		*result = get_int64();
+
+		log_fuzzed(obj->name_, offset, (uint8_t*)&old, sizeof(old),
+			(uint8_t*)result, sizeof(*result));
+	}
 
 	return 1;
 }
@@ -257,6 +344,9 @@ static int8_t ReadBytes(struct hook_data *h_data)
 	int length = (int)h_data->r3;
 	uint32_t alignment = (uint32_t)h_data->sp[0];
 
+	if (log_enabled(obj->name_))
+		log_message(obj->name_, "ReadBytes");
+
 	h_data->r0 = (uint32_t)ReadBytes(obj, iter, data, length, alignment);
 
 	return 1;
@@ -275,6 +365,9 @@ static int8_t ReadData(struct hook_data *h_data)
 	const char **data = (const char**)h_data->r2;
 	int *length = (int*)h_data->r3;
 
+	if (log_enabled(obj->name_))
+		log_message(obj->name_, "ReadData");
+
 	h_data->r0 = (uint32_t)ReadData(obj, iter, data, length);
 
 	return 1;
@@ -291,6 +384,9 @@ static int8_t ReadString(struct hook_data *h_data)
 	IPCMessage *obj = (IPCMessage*)h_data->r0;
 	void **iter = (void**)h_data->r1;
 	std::string *result = (std::string*)h_data->r2;
+
+	if (log_enabled(obj->name_))
+		log_message(obj->name_, "ReadString");
 
 	h_data->r0 = (uint32_t)ReadString(obj, iter, result);
 
