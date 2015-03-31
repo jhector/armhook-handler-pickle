@@ -20,8 +20,10 @@ void write_log(const char *msg, uint32_t size)
 
 bool blacklisted(const char *name)
 {
+#if 0
 	if (strstr(name, "Constructor"))
 		return true;
+#endif
 
 	return false;
 }
@@ -45,36 +47,52 @@ void log_message(const char *name, const char *msg)
 	write_log(buffer, strlen(buffer));
 }
 
+void dump_hex(uint8_t *data, int len)
+{
+	char readable[17] = {0};
+
+	for (int i=0; i<len; i++) {
+		if (!(i % 16)) {
+			if (i != 0)
+				printf("  %s\n", readable);
+
+			printf(" %08x ", i);
+		}
+
+		printf(" %02x", data[i]);
+
+		if ((data[i] > 0x19) && (data[i] < 0x7f))
+			readable[i % 16] = data[i];
+		else
+			readable[i % 16] = '.';
+
+		readable[(i % 16)+1] = 0x0;
+	}
+
+	int padding = 0;
+	if ((padding = (len % 16))) {
+		for (int i=0; i<(16-padding); i++)
+			printf("   ");
+	}
+
+	printf("  %s\n", readable);
+}
+
 void log_fuzzed(const char *name, int offset, uint8_t *old, int old_size,
 	uint8_t *rep, int rep_size)
 {
 	char buf[256] = {0};
 
-	snprintf(buf, sizeof(buf), "name: %s, offset: 0x%08x\n", name, offset);
+	snprintf(buf, sizeof(buf), "name: %s\noffset: 0x%08x\n", name, offset);
 
 	write_log("======\n", 7);
 	write_log(buf, strlen(buf));
 	write_log("original:\n", 10);
-
-	for (int i=0; i<old_size; i++) {
-		if ((i % 10) == 0)
-			write_log("\n", 1);
-
-		snprintf(buf, sizeof(buf), "%02x ", old[i]);
-		write_log(buf, strlen(buf));
-	}
+	dump_hex(old, old_size);
 
 	write_log("\n", 1);
 	write_log("replaced:\n", 10);
-
-	for (int i=0; i<rep_size; i++) {
-		if ((i % 10) == 0)
-			write_log("\n", 1);
-
-		snprintf(buf, sizeof(buf), "%02x ", old[i]);
-		snprintf(buf, sizeof(buf), "%02x ", rep[i]);
-		write_log(buf, strlen(buf));
-	}
+	dump_hex(rep, rep_size);
 
 	write_log("\n", 1);
 }

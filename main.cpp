@@ -347,7 +347,14 @@ static int8_t ReadBytes(struct hook_data *h_data)
 	if (log_enabled(obj->name_))
 		log_message(obj->name_, "ReadBytes");
 
+	int offset = get_offset(obj, iter);
 	h_data->r0 = (uint32_t)ReadBytes(obj, iter, data, length, alignment);
+
+	if (data_enabled() && !blacklisted(obj->name_) &&
+		msg_enabled(obj->name_)) {
+		log_fuzzed(obj->name_, offset, (uint8_t*)(*data), length,
+			NULL, 0);
+	}
 
 	return 1;
 }
@@ -368,7 +375,14 @@ static int8_t ReadData(struct hook_data *h_data)
 	if (log_enabled(obj->name_))
 		log_message(obj->name_, "ReadData");
 
+	int offset = get_offset(obj, iter);
 	h_data->r0 = (uint32_t)ReadData(obj, iter, data, length);
+
+	if (data_enabled() && !blacklisted(obj->name_) &&
+		msg_enabled(obj->name_)) {
+		log_fuzzed(obj->name_, offset, (uint8_t*)(*data), *length,
+			NULL, 0);
+	}
 
 	return 1;
 }
@@ -388,7 +402,14 @@ static int8_t ReadString(struct hook_data *h_data)
 	if (log_enabled(obj->name_))
 		log_message(obj->name_, "ReadString");
 
+	int offset = get_offset(obj, iter);
 	h_data->r0 = (uint32_t)ReadString(obj, iter, result);
+
+	if (data_enabled() && !blacklisted(obj->name_) &&
+		msg_enabled(obj->name_)) {
+		log_fuzzed(obj->name_, offset, (uint8_t*)result->c_str(),
+			result->length(), NULL, 0);
+	}
 
 	return 1;
 }
